@@ -22,7 +22,7 @@ namespace FindingStar
             private set;
         }
 
-        public string MazeString;
+        public char[] MazeString;
         public string MazeName;
         public System.Drawing.Point startPoint;
         public System.Drawing.Point endPoint;
@@ -74,7 +74,7 @@ namespace FindingStar
             }
             listCharMaze[0] = '1';
             listCharMaze[Height * Width - 1] = '1';
-            MazeString = new String(listCharMaze.ToArray());
+            MazeString = listCharMaze.ToArray();
 
         }
 
@@ -129,7 +129,7 @@ namespace FindingStar
                     endPoint.X = Convert.ToInt32(sr.ReadLine());
                     endPoint.Y = Convert.ToInt32(sr.ReadLine());
 
-                    MazeString = sr.ReadToEnd();
+                    MazeString = sr.ReadToEnd().ToArray();
 
                     fs.Close();
                 }
@@ -142,7 +142,8 @@ namespace FindingStar
         public void deleteMaze()
         {
             if (File.Exists(MazePath)) { File.Delete(MazePath); }
-            this.MazeString = this.MazeName = null;
+            this.MazeString = null;
+            this.MazeName = null;
             this.Width = this.Height = 0;
             startPoint = new System.Drawing.Point();
             endPoint = new System.Drawing.Point();

@@ -84,9 +84,10 @@ namespace FindingStar
         }
 
         #endregion
-
-        delegate void DelegateFillGrid(System.Drawing.Point pt, Brush b);                //定义委托
-        public void FillGridInvoke(System.Drawing.Point pt, Brush b)                                      //委托访问接口
+        //定义委托
+        delegate void DelegateFillGrid(System.Drawing.Point pt, Brush b);
+        //委托访问接口
+        public void FillGridInvoke(System.Drawing.Point pt, Brush b)
         {
             DelegateFillGrid d = fillgrid;
             this.Dispatcher.BeginInvoke(d, new object[] { pt, b });
@@ -97,6 +98,30 @@ namespace FindingStar
             listRect[md.p2i(pt)].Fill = b;
         }
 
+        delegate void DelegateDrawPath(string s);
+        Path mazePath; GeometryConverter gc;
+        public void DrawPathInvoke(string s)
+        {
+            DelegateDrawPath d = drawPath;
+            this.Dispatcher.BeginInvoke(d, new object[] { s });
+
+        }
+        void drawPath(string strPath)
+        {
+            if (mazePath == null || gc == null)
+            {
+                mazePath = new Path();
+                gc = new GeometryConverter();
+                mazePath.Stroke = Brushes.Red;
+                mazePath.StrokeThickness = 3;
+                Grid.SetRowSpan(mazePath, md.Height);
+                Grid.SetColumnSpan(mazePath, md.Width);
+            }
+            if (!gMaze.Children.Contains(mazePath))
+                gMaze.Children.Add(mazePath);
+            mazePath.Data = (Geometry)gc.ConvertFromString(strPath);
+
+        }
         #region panelEdit
 
         private void btnCreateRandomMaze_Click(object sender, RoutedEventArgs e)
@@ -370,10 +395,46 @@ namespace FindingStar
             if (isEditing)
             {
                 Point pt = e.GetPosition(gMaze);
-                System.Drawing.Point p = new System.Drawing.Point((int)pt.X,(int)pt.Y);
-                //--------------------------------------------
+                System.Drawing.Point p = new System.Drawing.Point((int)(pt.X / MCommon.MazeGridLenght), (int)(pt.Y / MCommon.MazeGridLenght));
+
+
+                if (rbObstacle.IsChecked == true)
+                {
+                    //变为障碍
+                    md.MazeString[md.p2i(p)] = '0';
+                    FillGridInvoke(p, MCommon.getCellColor(CellColor.obstacle));
+                }
+                else if (rbAccess.IsChecked == true)
+                {
+                    //变为通路
+                    md.MazeString[md.p2i(p)] = '1';
+                    FillGridInvoke(p, MCommon.getCellColor(CellColor.access));
+                }
+                else if (md.MazeString[md.p2i(p)] == '1')
+                {
+                    //点击处为通路
+                    if (rbStart.IsChecked == true)
+                    {
+                        //设置为起点
+                        md.startPoint = p;
+                        MoveToPoint(p, cMove);
+                    }
+                    else if (rbEnd.IsChecked == true)
+                    {
+                        //设置为终点
+                        md.endPoint = p;
+                        MoveToPoint(p, cEnd);
+                    }
+                }
 
             }
+        }
+
+        private void btnClearPath_Click(object sender, RoutedEventArgs e)
+        {
+
+            rereadMaze();
+
         }
     }
 }

@@ -16,13 +16,13 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <!--直线-->
-        <Path Stroke="Blue" StrokeThickness="2" Grid.Row="0" Grid.Column="0">
+        <Path Stroke="Blue" StrokeThickness="2" Grid.RowSpan="4">
             <Path.Data>
-                <LineGeometry StartPoint="50,0" EndPoint="160,160"></LineGeometry>
+                <LineGeometry StartPoint="50,0" EndPoint="20,120" ></LineGeometry>
             </Path.Data>
         </Path>
         <!--矩形路径-->
-        <Path Stroke="Orange" Fill="Yellow" Grid.Row="0" Grid.Column="1">
+        <Path Stroke="Orange" Fill="Yellow" Grid.Row="0" Grid.Column="1" Margin="10,0,-10,0">
             <Path.Data>
                 <RectangleGeometry Rect="20,20,120,120" RadiusX="10" RadiusY="10"></RectangleGeometry>
             </Path.Data>
@@ -56,9 +56,11 @@
                 </PathGeometry>
             </Path.Data>
         </Path>-->
-        <Path x:Name="thepath" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Stroke="Black" Data="M 100,240 C 510,300 80,100 300,160 H40 v80" />
+        <!--<Path x:Name="thepath" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Stroke="Black" Data="M 100,240 C 510,300 80,100 300,160 H40 v80" />
         <Button x:Name="button" Content="Button" Click="button_Click" Grid.Column="1" HorizontalAlignment="Left" Margin="284,342,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75"/>
         <WindowsFormsHost x:Name="wfh" Grid.Column="1" HorizontalAlignment="Left" Height="181" Margin="236,119,0,0" Grid.Row="1" VerticalAlignment="Top" Width="225"/>
-        <TextBlock x:Name="textBlock" Grid.Column="1" HorizontalAlignment="Left" Margin="46,300,0,0" Grid.Row="1" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
+        <TextBlock x:Name="textBlock" Grid.Column="1" HorizontalAlignment="Left" Margin="46,300,0,0" Grid.Row="1" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>-->
+
+        <Path Grid.RowSpan="2" Stroke="Black" Data="M 55,95 L 115,75 115,85 115,95 105,95 95,95 95,105 85,105 85,115 75,115 65,115 65,105 65,95 55,95 " />
     </Grid>
 </Window>

@@ -18,7 +18,7 @@
             <RowDefinition ></RowDefinition>
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" Grid.Column="0" FontSize="16" Text="迷宫列表" VerticalAlignment="Center" HorizontalAlignment="Center" />
-        
+
         <Grid  Grid.Column="0" Grid.Row="1" Margin="5">
             <Grid.RowDefinitions>
                 <RowDefinition></RowDefinition>
@@ -30,7 +30,7 @@
 
             </ListBox>
             <Button Grid.Row="1" x:Name="AddNewMaze" Content="+"  FontWeight="Bold"   FontSize="16" Background="White" BorderBrush="#FFCBCBCB" Click="btnAddMaze_Click" />
-            
+
 
         </Grid>
 
@@ -40,6 +40,7 @@
             <Button x:Name="btnDelete" Content="删除" Padding="5,0,5,0"  Margin="5,0,5,0" Background="White" Click="btnDelete_Click" IsEnabled="False" />
             <Button x:Name="btnDepthSearch" Content="深度搜索" Padding="5,0,5,0"  Margin="40,0,5,0"  Background="White" IsEnabled="False" Click="btnDepthSearch_Click"/>
             <Button x:Name="btnWidthSearch" Content="广度搜索" Padding="5,0,5,0"  Margin="5,0,5,0"  Background="White" IsEnabled="False" Click="btnWidthSearch_Click"/>
+            <Button x:Name="btnClearPath" Content="清空路线" Padding="5,0,5,0"  Margin="5,0,5,0"  Background="White" IsEnabled="False" Click="btnClearPath_Click" />
         </StackPanel>
 
         <StackPanel x:Name="panelEditMaze" Grid.Row="0" Grid.Column="1" Orientation="Horizontal"  Margin="4" Visibility="Hidden">
@@ -57,26 +58,27 @@
             <Button x:Name="btnSave" Content="保存" Padding="5,0,5,0"  Margin="20,0,5,0"  Background="White"  Click="btnSave_Click"/>
             <Button x:Name="btnCancel" Content="取消" Padding="5,0,5,0"  Margin="5,0,5,0"  Background="White" Click="btnCancel_Click" />
         </StackPanel>
-        
 
 
-            <Grid Grid.Column="1" Grid.Row="1" x:Name="frameContent" Margin="0,0,0,0"  >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="100"></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" Margin="5,30">
-                    <RadioButton x:Name="radioButton" Content="■障碍" HorizontalAlignment="Center" Margin="0,10" FontSize="16" Foreground="Black" />
-                    <RadioButton x:Name="radioButton1" Content="■通道" HorizontalAlignment="Center" Margin="0,10" FontSize="16" Foreground="LightGray" />
-                    <RadioButton x:Name="radioButton2" Content="■起点" HorizontalAlignment="Center" Margin="0,10"  FontSize="16" Foreground="Yellow"/>
-                    <RadioButton x:Name="radioButton3" Content="■终点" HorizontalAlignment="Center" Margin="0,10" FontSize="16" Foreground="LightGreen"/>
 
-                </StackPanel>
+        <Grid Grid.Column="1" Grid.Row="1" x:Name="frameContent" Margin="0,0,0,0"  >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" Margin="5,30">
 
-                <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
-                    <Grid  x:Name="gMaze" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10" MouseDown="gMaze_MouseDown"></Grid>
-                </ScrollViewer>
+                <RadioButton x:Name="rbAccess" Content="■通道" GroupName="SetMaze"  HorizontalAlignment="Center" Margin="0,10" FontSize="16" Foreground="LightGray" IsChecked="True" />
+                <RadioButton x:Name="rbObstacle" Content="■障碍" GroupName="SetMaze"  HorizontalAlignment="Center" Margin="0,10" FontSize="16" Foreground="Black" />
+                <RadioButton x:Name="rbStart" Content="■起点" GroupName="SetMaze"  HorizontalAlignment="Center" Margin="0,10"  FontSize="16" Foreground="Yellow"/>
+                <RadioButton x:Name="rbEnd" Content="■终点" GroupName="SetMaze"  HorizontalAlignment="Center" Margin="0,10" FontSize="16" Foreground="LightGreen"/>
 
-            </Grid>
+            </StackPanel>
+
+            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
+                <Grid  x:Name="gMaze" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10" MouseDown="gMaze_MouseDown"></Grid>
+            </ScrollViewer>
+
         </Grid>
+    </Grid>
 </Window>

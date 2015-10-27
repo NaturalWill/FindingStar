@@ -12,33 +12,18 @@ namespace FindingStar
 {
     public class MazePath
     {
-        Path mazePath;
-        GeometryConverter gc;
         MazeData md;
 
         Thread th;
         int speed;
-        public string strPath { get; private set; }
 
         public MazePath(MazeData _md, ref Grid g)
         {
             md = _md;
             speed = 10;
 
-            //mazePath = new System.Windows.Shapes.Path();
-
-            //mazePath.Stroke = Brushes.Red;
-
-            //mazePath.StrokeThickness = 3;
-
-            //gc = new GeometryConverter();
         }
 
-        void drawPath(string newPathString)
-        {
-            strPath = newPathString;
-            mazePath.Data = (Geometry)gc.ConvertFromString(newPathString);
-        }
 
         const string noWay = "T_T 没有通路";
 
@@ -142,7 +127,6 @@ namespace FindingStar
                     std.Push(dir);
                     is_turn = true;
                 }
-
                 else
                 {
                     //"进入"
@@ -157,6 +141,16 @@ namespace FindingStar
             std.Pop();
 
             draw_path(end_point);//画出最后一个点
+
+            string s = "M " + (stp.Peek().X * MCommon.MazeGridLenght + MCommon.MazeGridLenght / 2) + ","
+                + (stp.Peek().Y * MCommon.MazeGridLenght + MCommon.MazeGridLenght / 2) + " L ";
+            for (int i = stp.Count - 1; i >= 0; i--)
+            {
+                System.Drawing.Point _p = stp.Pop();
+                s += (_p.X * MCommon.MazeGridLenght + MCommon.MazeGridLenght / 2) + ","
+                    + (_p.Y * MCommon.MazeGridLenght + MCommon.MazeGridLenght / 2) + " ";
+            }
+            MainWindow.mw.DrawPathInvoke(s);
 
             MessageBox.Show("搜索完成，成功找到了星星");
             th.Abort();
