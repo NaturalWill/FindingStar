@@ -22,50 +22,44 @@ namespace FindingStar
         public MainWindow()
         {
             InitializeComponent();
-            MCommon.mw = this;
+            mw = this;
         }
-
+        public static MainWindow mw;
+        MazeData md;
+        MazePath mp;
         const string strMaze = "迷宫问题";
-        
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
+        bool isEditing = false;
 
-        }
+        Ellipse cMove;//起点
+        System.Windows.Shapes.Path cEnd;//终点
+        List<Rectangle> listRect;//矩形列表
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            frameContent.ColumnDefinitions[0].Width = new GridLength(0d);
             FlashMazeList();
         }
 
-
         #region MazeList
 
+        private void MazeList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (this.MazeList.SelectedIndex >= 0)
+            {
+                md.ReadMaze(((TextBlock)MazeList.SelectedItem).Text);
+                ViewMaze();
+                initMazeGrid();
+            }
+            else NoMaze();
+        }
         private void btnAddMaze_Click(object sender, RoutedEventArgs e)
         {
-            MCommon.mdcur = new MazeData();
+            md = new MazeData();
+            initMazeGrid();
             EditMaze();
         }
-
-        Button CreateMazeButton(string text, bool isbold = false)
-        {
-            Button btn = new Button();
-            if (isbold) btn.FontWeight = FontWeights.Bold;
-            btn.FontSize = 16.0;
-            btn.Background = Brushes.White;
-            btn.BorderBrush = new BrushConverter().ConvertFromString("#FFCBCBCB") as SolidColorBrush;
-            btn.Content = text;
-            return btn;
-        }
-
-        private void BtnMaze_Click(object sender, RoutedEventArgs e)
-        {
-            MCommon.mdcur.ReadMaze(((Button)sender).Content.ToString());
-            ViewMaze();
-
-        }
-
         #endregion
-        
+
         #region panelView
 
 
@@ -77,12 +71,15 @@ namespace FindingStar
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
             NoMaze();
-            MCommon.mdcur.deleteMaze();
+            md.deleteMaze();
+            initMazeGrid();
             FlashMazeList();
         }
 
         private void btnDepthSearch_Click(object sender, RoutedEventArgs e)
         {
+            mp = new MazePath(md, ref gMaze);
+            mp.findMazeWay(1);
 
         }
 
@@ -92,6 +89,18 @@ namespace FindingStar
         }
 
         #endregion
+
+        private delegate void DelegateFillGrid(Point pt, Brush b);                //定义委托
+        public void FillGridInvoke(Point pt, Brush b)                                      //委托访问接口
+        {
+            DelegateFillGrid d = fillgrid;
+            this.Dispatcher.Invoke(d);
+        }
+
+        void fillgrid(Point pt, Brush b)
+        {
+            ((Rectangle)gMaze.FindName(MCommon.getCName(pt))).Fill = b;
+        }
 
         #region panelEdit
 
@@ -114,12 +123,11 @@ namespace FindingStar
                     return;
                 }
 
-                MazeData md = new MazeData();
+                md = new MazeData();
                 md.CreateMaze(width, height, mazename);
 
-                md.ShowMaze(ref MCommon.pme.gMaze);
+                initMazeGrid();
 
-                MCommon.mdcur = md;
             }
             catch
             {
@@ -129,7 +137,7 @@ namespace FindingStar
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            MCommon.mdcur.SaveMaze();
+            md.SaveMaze();
             rereadMaze();
         }
 
@@ -194,83 +202,178 @@ namespace FindingStar
 
 
 
+        public void initMazeGrid()
+        {
+            #region gMaze
+
+            gMaze.Children.Clear();
+            gMaze.ColumnDefinitions.Clear();
+            gMaze.RowDefinitions.Clear();
+
+            if (md == null) return;
+
+            gMaze.Width = md.Width * md.MazeGridLenght;
+            gMaze.Height = md.Height * md.MazeGridLenght;
+
+
+            for (int r = 0; r < md.Height; r++)
+                gMaze.RowDefinitions.Add(new RowDefinition());
+
+            for (int c = 0; c < md.Width; c++)
+                gMaze.ColumnDefinitions.Add(new ColumnDefinition());
+
+            Point p = new Point();
+            for (p.Y = 0; p.Y < md.Height; p.Y++)
+            {
+                for (p.X = 0; p.X < md.Width; p.X++)
+                {
+                    Rectangle r = new Rectangle();
+                    r.Height = r.Width = md.MazeGridLenght;
+                    r.Name = MCommon.getCName(p);
+                    //r.StrokeThickness = 0;
+                    if (md.MazeString[p.Y * md.Width + p.X] == '1')
+                        r.Fill = MCommon.getCellColor(CellColor.access);
+                    else
+                        r.Fill = MCommon.getCellColor(CellColor.obstacle);
+
+                    r.MouseDown += R_MouseDown;
+
+                    gMaze.Children.Add(r);
+
+                    MoveToPoint(p, r);
+                }
+            }
+
+            if (cMove == null || cEnd == null)
+            {
+                MazeControl m = new MazeControl();
+                cMove = m.ellipseMove;
+                cEnd = m.pathStar;
+
+                m.sPanel.Children.Remove(cMove);
+                m.sPanel.Children.Remove(cEnd);
+            }
+
+            gMaze.Children.Add(cMove);
+            gMaze.Children.Add(cEnd);
+
+            #endregion
+
+
+            tbMazeName.Text = string.IsNullOrWhiteSpace(md.MazeName) ? strMaze :
+                (md.MazeName + " (" + md.Height + " x " + md.Width + ") ");
+            tbMazeNewName.Text = md.MazeName;
+            tbMazeWidth.Text = md.Width.ToString();
+            tbMazeHeight.Text = md.Height.ToString();
+
+            autoShowGrid();
+        }
+
+        private void R_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (isEditing)
+            {
+                Rectangle r = (Rectangle)sender;
+                Point p = MCommon.restoreCName(r.Name);
+
+            }
+        }
+
+        private void autoShowGrid()
+        {
+            if (md == null) return;
+            if (md.IsEmptyMaze)
+            {
+                cMove.Visibility = cEnd.Visibility = Visibility.Hidden;
+                frameContent.ColumnDefinitions[0].Width = new GridLength(0d);
+            }
+            else
+            {
+                MoveToPoint(md.startPoint, cMove);
+                MoveToPoint(md.endPoint, cEnd);
+                cMove.Visibility = cEnd.Visibility = Visibility.Visible;
+                if (isEditing)
+                {
+                    frameContent.ColumnDefinitions[0].Width = new GridLength(100d);
+                }
+                else
+                {
+                    frameContent.ColumnDefinitions[0].Width = new GridLength(0d);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Set the position in grid
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="s"></param>
+        private static void MoveToPoint(Point p, Shape s)
+        {
+            s.SetValue(Grid.ColumnProperty, p.X);
+            s.SetValue(Grid.RowProperty, p.Y);
+        }
+
         private void FlashMazeList()
         {
-
-            MCommon.mdcur = new MazeData();
-            string[] mazelist = MCommon.mdcur.getMazeList();
-
-            this.tbMazeName.Text = strMaze;
-
-            this.MazeList.Children.Clear();
-
-            TextBlock tb = new TextBlock();
-            tb.Text = "迷宫列表";
-            tb.HorizontalAlignment = HorizontalAlignment.Center;
-            tb.Margin = new Thickness(10);
-            this.MazeList.Children.Add(tb);
-
-            for (int i = 0; i < mazelist.Length; i++)
+            try
             {
-                Button btn = CreateMazeButton(mazelist[i]);
-                btn.Click += BtnMaze_Click;
-                this.MazeList.Children.Add(btn);
+                md = new MazeData();
+                string[] mazelist = MazeData.getMazeList();
+                this.tbMazeName.Text = strMaze;
+
+                this.MazeList.Items.Clear();
+
+                for (int i = 0; i < mazelist.Length; i++)
+                {
+                    TextBlock tb = new TextBlock();
+                    tb.Text = mazelist[i];
+                    this.MazeList.Items.Add(tb);
+                }
             }
-            Button btnAddMaze = CreateMazeButton("+", true);
-            btnAddMaze.Click += btnAddMaze_Click;
-            this.MazeList.Children.Add(btnAddMaze);
+            catch (Exception ex)
+            {
+                throw new Exception("刷新错误", ex);
+            }
         }
 
         void rereadMaze()
         {
-            string curMazeName = MCommon.mdcur.MazeName;
+            string curMazeName = md.MazeName;
+            isEditing = false;
             FlashMazeList();
-            MCommon.mdcur.ReadMaze(curMazeName);
+            md.ReadMaze(curMazeName);
+            initMazeGrid();
             ViewMaze();
         }
 
-        public void importMaze(MazeData md)
-        {
-            if (md != null)
-            {
-                tbMazeNewName.Text = md.MazeName;
-                tbMazeWidth.Text = md.Width.ToString();
-                tbMazeHeight.Text = md.Height.ToString();
-                md.ShowMaze(ref MCommon.pme.gMaze);
-                if (md != MCommon.mdcur)
-                    MCommon.mdcur = md;
-            }
-        }
 
         public void EditMaze()
         {
-            btnEdit.IsEnabled = btnWidthSearch.IsEnabled = btnDepthSearch.IsEnabled = false;
-            btnDelete.IsEnabled = true;
-            panelViewMaze.Visibility = Visibility.Hidden;
-            panelEditMaze.Visibility = Visibility.Visible;
-            if (MCommon.pme == null) MCommon.pme = new PageMazeEdit();
-            importMaze(MCommon.mdcur);
-            frameContent.Navigate(MCommon.pme);
+            if (md != null)
+            {
+                btnEdit.IsEnabled = btnWidthSearch.IsEnabled = btnDepthSearch.IsEnabled = false;
+                btnDelete.IsEnabled = true;
+                panelViewMaze.Visibility = Visibility.Hidden;
+                panelEditMaze.Visibility = Visibility.Visible;
+                isEditing = true;
+                autoShowGrid();
+            }
         }
-
         public void ViewMaze()
         {
-            btnEdit.IsEnabled = btnWidthSearch.IsEnabled = btnDepthSearch.IsEnabled = true;
-            btnDelete.IsEnabled = true;
-            panelViewMaze.Visibility = Visibility.Visible;
-            panelEditMaze.Visibility = Visibility.Hidden;
-            if (MCommon.pmv == null) MCommon.pmv = new PageMazeView();
-
-            MCommon.mdcur.ShowMaze(ref MCommon.pmv.gMaze);
-            frameContent.Navigate(MCommon.pmv);
-
-            this.tbMazeName.Text = string.IsNullOrWhiteSpace(MCommon.mdcur.MazeName) ? strMaze :
-                (MCommon.mdcur.MazeName + " (" + MCommon.mdcur.Height + " x " + MCommon.mdcur.Width + ") ");
+            if (md != null)
+            {
+                btnEdit.IsEnabled = btnWidthSearch.IsEnabled = btnDepthSearch.IsEnabled = true;
+                btnDelete.IsEnabled = true;
+                panelViewMaze.Visibility = Visibility.Visible;
+                panelEditMaze.Visibility = Visibility.Hidden;
+                isEditing = false;
+            }
         }
         private void NoMaze()
         {
-            btnWidthSearch.IsEnabled = btnDepthSearch.IsEnabled = btnEdit.IsEnabled = btnDelete.IsEnabled = false;
-            frameContent.Navigate(new Page());
+            btnWidthSearch.IsEnabled = btnDepthSearch.IsEnabled = btnEdit.IsEnabled = btnDelete.IsEnabled = isEditing = false;
         }
 
     }

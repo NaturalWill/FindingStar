@@ -60,6 +60,8 @@
     <Compile Include="MazeControl.xaml.cs">
       <DependentUpon>MazeControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MazeData.cs" />
+    <Compile Include="MazePath.cs" />
     <Compile Include="WindowTest.xaml.cs">
       <DependentUpon>WindowTest.xaml</DependentUpon>
     </Compile>
@@ -71,20 +73,12 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="cMaze.cs" />
+    <Compile Include="MCommon.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Page Include="MazeControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="PageMazeEdit.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="PageMazeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -94,12 +88,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PageMazeEdit.xaml.cs">
-      <DependentUpon>PageMazeEdit.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="PageMazeView.xaml.cs">
-      <DependentUpon>PageMazeView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

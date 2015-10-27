@@ -59,5 +59,6 @@
         <Path x:Name="thepath" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Stroke="Black" Data="M 100,240 C 510,300 80,100 300,160 H40 v80" />
         <Button x:Name="button" Content="Button" Click="button_Click" Grid.Column="1" HorizontalAlignment="Left" Margin="284,342,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75"/>
         <WindowsFormsHost x:Name="wfh" Grid.Column="1" HorizontalAlignment="Left" Height="181" Margin="236,119,0,0" Grid.Row="1" VerticalAlignment="Top" Width="225"/>
+        <TextBlock x:Name="textBlock" Grid.Column="1" HorizontalAlignment="Left" Margin="46,300,0,0" Grid.Row="1" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
     </Grid>
 </Window>
