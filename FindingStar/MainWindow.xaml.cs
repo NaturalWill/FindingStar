@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace FindingStar
@@ -85,21 +79,22 @@ namespace FindingStar
 
         private void btnWidthSearch_Click(object sender, RoutedEventArgs e)
         {
-
+            mp = new MazePath(md, ref gMaze);
+            mp.findMazeWay();
         }
 
         #endregion
 
-        private delegate void DelegateFillGrid(Point pt, Brush b);                //定义委托
-        public void FillGridInvoke(Point pt, Brush b)                                      //委托访问接口
+        delegate void DelegateFillGrid(System.Drawing.Point pt, Brush b);                //定义委托
+        public void FillGridInvoke(System.Drawing.Point pt, Brush b)                                      //委托访问接口
         {
             DelegateFillGrid d = fillgrid;
-            this.Dispatcher.Invoke(d);
+            this.Dispatcher.BeginInvoke(d, new object[] { pt, b });
         }
 
-        void fillgrid(Point pt, Brush b)
+        void fillgrid(System.Drawing.Point pt, Brush b)
         {
-            ((Rectangle)gMaze.FindName(MCommon.getCName(pt))).Fill = b;
+            listRect[md.p2i(pt)].Fill = b;
         }
 
         #region panelEdit
@@ -204,6 +199,11 @@ namespace FindingStar
 
         public void initMazeGrid()
         {
+            if (listRect == null)
+                listRect = new List<Rectangle>();
+            else
+                listRect.Clear();
+
             #region gMaze
 
             gMaze.Children.Clear();
@@ -222,21 +222,19 @@ namespace FindingStar
             for (int c = 0; c < md.Width; c++)
                 gMaze.ColumnDefinitions.Add(new ColumnDefinition());
 
-            Point p = new Point();
+            System.Drawing.Point p = new System.Drawing.Point();
             for (p.Y = 0; p.Y < md.Height; p.Y++)
             {
                 for (p.X = 0; p.X < md.Width; p.X++)
                 {
                     Rectangle r = new Rectangle();
                     r.Height = r.Width = md.MazeGridLenght;
-                    r.Name = MCommon.getCName(p);
+                    listRect.Add(r);
                     //r.StrokeThickness = 0;
                     if (md.MazeString[p.Y * md.Width + p.X] == '1')
                         r.Fill = MCommon.getCellColor(CellColor.access);
                     else
                         r.Fill = MCommon.getCellColor(CellColor.obstacle);
-
-                    r.MouseDown += R_MouseDown;
 
                     gMaze.Children.Add(r);
 
@@ -269,15 +267,6 @@ namespace FindingStar
             autoShowGrid();
         }
 
-        private void R_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (isEditing)
-            {
-                Rectangle r = (Rectangle)sender;
-                Point p = MCommon.restoreCName(r.Name);
-
-            }
-        }
 
         private void autoShowGrid()
         {
@@ -308,7 +297,7 @@ namespace FindingStar
         /// </summary>
         /// <param name="p"></param>
         /// <param name="s"></param>
-        private static void MoveToPoint(Point p, Shape s)
+        private static void MoveToPoint(System.Drawing.Point p, Shape s)
         {
             s.SetValue(Grid.ColumnProperty, p.X);
             s.SetValue(Grid.RowProperty, p.Y);
@@ -376,5 +365,15 @@ namespace FindingStar
             btnWidthSearch.IsEnabled = btnDepthSearch.IsEnabled = btnEdit.IsEnabled = btnDelete.IsEnabled = isEditing = false;
         }
 
+        private void gMaze_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (isEditing)
+            {
+                Point pt = e.GetPosition(gMaze);
+                System.Drawing.Point p = new System.Drawing.Point((int)pt.X,(int)pt.Y);
+                //--------------------------------------------
+
+            }
+        }
     }
 }

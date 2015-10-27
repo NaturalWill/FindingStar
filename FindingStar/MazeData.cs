@@ -24,8 +24,8 @@ namespace FindingStar
 
         public string MazeString;
         public string MazeName;
-        public Point startPoint;
-        public Point endPoint;
+        public System.Drawing.Point startPoint;
+        public System.Drawing.Point endPoint;
 
         static string DirPath = Environment.CurrentDirectory + @"\MazeData";
 
@@ -35,8 +35,8 @@ namespace FindingStar
         {
             Width = 0;
             Height = 0;
-            startPoint = new Point();
-            endPoint = new Point();
+            startPoint = new System.Drawing.Point();
+            endPoint = new System.Drawing.Point();
         }
         public bool IsEmptyMaze
         {
@@ -52,8 +52,8 @@ namespace FindingStar
             MazeName = mazename;
             //生成随机的0,1串表示迷宫，障碍占迷宫体积的40%
             Width = width; Height = height;
-            startPoint = new Point();
-            endPoint = new Point(Width - 1, Height - 1);
+            startPoint = new System.Drawing.Point();
+            endPoint = new System.Drawing.Point(Width - 1, Height - 1);
 
             List<char> listCharMaze = new List<char>();
             Random rd = new Random();
@@ -84,9 +84,9 @@ namespace FindingStar
         /// </summary>
         /// <param name="p"></param>
         /// <returns></returns>
-        public int p2i(Point p)
+        public int p2i(System.Drawing.Point p)
         {
-            return p.X * Width + p.Y;
+            return p.X+ p.Y * Width;
         }
 
         #region Read,Write,Delete
@@ -144,8 +144,8 @@ namespace FindingStar
             if (File.Exists(MazePath)) { File.Delete(MazePath); }
             this.MazeString = this.MazeName = null;
             this.Width = this.Height = 0;
-            startPoint = new Point();
-            endPoint = new Point();
+            startPoint = new System.Drawing.Point();
+            endPoint = new System.Drawing.Point();
         }
         /// <summary>
         /// 迷宫数据保存到外存

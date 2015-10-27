@@ -74,7 +74,7 @@
                 </StackPanel>
 
                 <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
-                    <Grid  x:Name="gMaze" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10"></Grid>
+                    <Grid  x:Name="gMaze" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10" MouseDown="gMaze_MouseDown"></Grid>
                 </ScrollViewer>
 
             </Grid>
