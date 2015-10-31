@@ -14,16 +14,24 @@ namespace FindingStar
     {
         MazeData md;
 
-        Thread th;
+        Thread th1, th2;
         int speed;
-
+        public static int th_num = 1;
+        string strDepthPath;
         public MazePath(MazeData _md, ref Grid g)
         {
             md = _md;
             speed = 10;
 
         }
-
+        public void stop()
+        {
+            if (th1 != null)
+                th1.Abort();
+            if (th2 != null)
+                th2.Abort();
+            th_num = 1;
+        }
 
         const string noWay = "T_T 没有通路";
 
@@ -52,7 +60,17 @@ namespace FindingStar
                 p = new System.Drawing.Point(pt.X, pt.Y - 1);
             else
                 p = new System.Drawing.Point(pt.X, pt.Y + 1);
-            MainWindow.mw.FillGridInvoke(p, Brushes.LightBlue);
+
+            strDepthPath += " " + (p.X * MCommon.MazeGridLenght + MCommon.MazeGridLenght / 2)
+                + "," + (p.Y * MCommon.MazeGridLenght + MCommon.MazeGridLenght / 2);
+
+            MainWindow.mw.DrawPathInvoke(strDepthPath);
+        }
+        public void back_path()
+        {
+            strDepthPath = strDepthPath.Remove(strDepthPath.LastIndexOf(' '));
+
+            MainWindow.mw.DrawPathInvoke(strDepthPath);
         }
         //标示搜索的路径
         public void draw_path(System.Drawing.Point p)
@@ -65,13 +83,13 @@ namespace FindingStar
         {
             if (depth_way == 0)
             {
-                th = new Thread(new ThreadStart(find_way_weith));
-                th.Start();
+                th2 = new Thread(new ThreadStart(find_way_weith));
+                th2.Start();
             }
             else
             {
-                th = new Thread(new ThreadStart(find_way_depth));
-                th.Start();
+                th1 = new Thread(new ThreadStart(find_way_depth));
+                th1.Start();
             }
 
         }
@@ -82,7 +100,8 @@ namespace FindingStar
             if (md.MazeString[md.p2i(now_point)] == '0')//入口是否可通
             {
                 MessageBox.Show(noWay);
-                th.Abort();
+                ++th_num;
+                th1.Abort();
                 return;
             }
             Stack<System.Drawing.Point> stp = new Stack<System.Drawing.Point>();//储存当前路径
@@ -91,13 +110,17 @@ namespace FindingStar
             bool is_turn = false;//标志当前点是否转向
             stp.Push(now_point);
             std.Push(Direction.up);
+
+            strDepthPath = "M " + (stp.Peek().X * MCommon.MazeGridLenght + MCommon.MazeGridLenght / 2) + ","
+               + (stp.Peek().Y * MCommon.MazeGridLenght + MCommon.MazeGridLenght / 2) + " L";
             Thread.Sleep(speed);
             while (now_point != end_point)
             {
                 if (stp.Count == 0)
                 {
                     MessageBox.Show(noWay);
-                    th.Abort();
+                    ++th_num;
+                    th1.Abort();
                     return;
                 }
                 if (is_turn == true && std.Peek() == Direction.up)//4个方向探索完毕,无法通过，退回上一步
@@ -105,15 +128,17 @@ namespace FindingStar
                     std.Pop();
                     now_point = stp.Pop();
                     stp_not.Push(now_point);
+                    back_path();
                     MainWindow.mw.FillGridInvoke(now_point, Brushes.DarkRed);
                     //g.FillRectangle(Brushes.DarkRed, now_point.X, now_point.Y, 10, 10);
                     if (stp.Count == 0)
                     {
                         MessageBox.Show(noWay);
-                        th.Abort();
+                        ++th_num;
+                        th1.Abort();
                         return;
                     }
-                    MainWindow.mw.FillGridInvoke(stp.Peek(), Brushes.Blue);
+                    //MainWindow.mw.FillGridInvoke(stp.Peek(), Brushes.Blue);
                     //g.FillRectangle(backpen.Brush, stp.Peek().X, stp.Peek().Y, 10, 10);
                 }
                 System.Drawing.Point pt = Next_way(stp.Peek(), std.Peek());
@@ -142,18 +167,10 @@ namespace FindingStar
 
             draw_path(end_point);//画出最后一个点
 
-            string s = "M " + (stp.Peek().X * MCommon.MazeGridLenght + MCommon.MazeGridLenght / 2) + ","
-                + (stp.Peek().Y * MCommon.MazeGridLenght + MCommon.MazeGridLenght / 2) + " L ";
-            for (int i = stp.Count - 1; i >= 0; i--)
-            {
-                System.Drawing.Point _p = stp.Pop();
-                s += (_p.X * MCommon.MazeGridLenght + MCommon.MazeGridLenght / 2) + ","
-                    + (_p.Y * MCommon.MazeGridLenght + MCommon.MazeGridLenght / 2) + " ";
-            }
-            MainWindow.mw.DrawPathInvoke(s);
 
             MessageBox.Show("搜索完成，成功找到了星星");
-            th.Abort();
+            ++th_num;
+            th1.Abort();
             return;
         }
 
@@ -167,7 +184,8 @@ namespace FindingStar
             if (md.MazeString[md.p2i(now_point)] == '0')//入口是否可通
             {
                 MessageBox.Show(noWay);
-                th.Abort();
+                ++th_num;
+                th2.Abort();
                 return;
             }
             //储存将要遍历的点
@@ -178,14 +196,15 @@ namespace FindingStar
             qp.Enqueue(now_point);
             stp_passed.Add(now_point, new System.Drawing.Point(-1, -1));
             // g.FillEllipse(Brushes.Yellow, now_point.X + 2, now_point.Y + 2, 4, 4);
-            MainWindow.mw.FillGridInvoke(now_point, Brushes.Green);
+            //MainWindow.mw.FillGridInvoke(now_point, Brushes.Green);
             Thread.Sleep(speed);
             while (now_point != end_point)
             {
                 if (qp.Count == 0)
                 {
                     MessageBox.Show(noWay);
-                    th.Abort();
+                    ++th_num;
+                    th2.Abort();
                     return;
                 }
                 now_point = qp.Dequeue();
@@ -197,13 +216,13 @@ namespace FindingStar
                         || md.MazeString[md.p2i(pt)] == '0'//障碍物
                         || (stp_passed.Count > 0 && stp_passed.ContainsKey(pt))//已经探索过
                         )
-                        ;
+                    { }
                     else
                     {//开始探索
                         qp.Enqueue(pt);
                         stp_passed.Add(pt, now_point);
                         //g.FillEllipse(Brushes.Yellow, pt.X + 2, pt.Y + 2, 4, 4);
-                        MainWindow.mw.FillGridInvoke(pt, Brushes.Yellow);
+                        MainWindow.mw.FillGridInvoke(pt, Brushes.LightBlue);
                         Thread.Sleep(speed);
                     }
                 }
@@ -212,13 +231,14 @@ namespace FindingStar
             while (p.X != -1)//还原路径
             {
                 //g.FillEllipse(Brushes.Green, p.X, p.Y, 10, 10);//画出路径
-                MainWindow.mw.FillGridInvoke(p, Brushes.LightGreen);
+                MainWindow.mw.FillGridInvoke(p, Brushes.Yellow);
 
                 p = stp_passed[p];
             }
             //g.FillEllipse(Brushes.Green, 0, 0, 10, 10);
             MessageBox.Show("搜索完成，成功找到了星星");
-            th.Abort();
+            ++th_num;
+            th2.Abort();
             return;
         }
 

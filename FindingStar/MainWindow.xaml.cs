@@ -24,7 +24,7 @@ namespace FindingStar
         const string strMaze = "迷宫问题";
         bool isEditing = false;
 
-        Ellipse cMove;//起点
+        Ellipse cStart;//起点
         System.Windows.Shapes.Path cEnd;//终点
         List<Rectangle> listRect;//矩形列表
 
@@ -72,17 +72,47 @@ namespace FindingStar
 
         private void btnDepthSearch_Click(object sender, RoutedEventArgs e)
         {
-            mp = new MazePath(md, ref gMaze);
-            mp.findMazeWay(1);
+            if (MazePath.th_num > 0)
+            {
+                --MazePath.th_num;
+                initMazeGrid();
+                mp = new MazePath(md, ref gMaze);
+                mp.findMazeWay(1);
+                btnClearPath.IsEnabled = true;
+            }
 
         }
 
         private void btnWidthSearch_Click(object sender, RoutedEventArgs e)
         {
-            mp = new MazePath(md, ref gMaze);
-            mp.findMazeWay();
+            if (MazePath.th_num > 0)
+            {
+                --MazePath.th_num;
+                initMazeGrid();
+                mp = new MazePath(md, ref gMaze);
+                mp.findMazeWay();
+                btnClearPath.IsEnabled = true;
+            }
+        }
+        private void btnClearPath_Click(object sender, RoutedEventArgs e)
+        {
+            mp.stop();
+            initMazeGrid();
+            btnClearPath.IsEnabled = false;
         }
 
+        private void btnSearchBoth_Click(object sender, RoutedEventArgs e)
+        {
+            if (MazePath.th_num > 0)
+            {
+                --MazePath.th_num; --MazePath.th_num;
+                initMazeGrid();
+                mp = new MazePath(md, ref gMaze);
+                mp.findMazeWay(1);
+                mp.findMazeWay();
+                btnClearPath.IsEnabled = true;
+            }
+        }
         #endregion
         //定义委托
         delegate void DelegateFillGrid(System.Drawing.Point pt, Brush b);
@@ -220,9 +250,14 @@ namespace FindingStar
 
         #endregion
 
-
-
+        delegate void DelegateInitGrid();
         public void initMazeGrid()
+        {
+            DelegateInitGrid d = initGrid;
+            this.Dispatcher.BeginInvoke(d, new object[] { });
+        }
+
+        void initGrid()
         {
             if (listRect == null)
                 listRect = new List<Rectangle>();
@@ -267,17 +302,17 @@ namespace FindingStar
                 }
             }
 
-            if (cMove == null || cEnd == null)
+            if (cStart == null || cEnd == null)
             {
                 MazeControl m = new MazeControl();
-                cMove = m.ellipseMove;
-                cEnd = m.pathStar;
+                cStart = m.sStart;
+                cEnd = m.sStar;
 
-                m.sPanel.Children.Remove(cMove);
+                m.sPanel.Children.Remove(cStart);
                 m.sPanel.Children.Remove(cEnd);
             }
 
-            gMaze.Children.Add(cMove);
+            gMaze.Children.Add(cStart);
             gMaze.Children.Add(cEnd);
 
             #endregion
@@ -298,14 +333,14 @@ namespace FindingStar
             if (md == null) return;
             if (md.IsEmptyMaze)
             {
-                cMove.Visibility = cEnd.Visibility = Visibility.Hidden;
+                cStart.Visibility = cEnd.Visibility = Visibility.Hidden;
                 frameContent.ColumnDefinitions[0].Width = new GridLength(0d);
             }
             else
             {
-                MoveToPoint(md.startPoint, cMove);
+                MoveToPoint(md.startPoint, cStart);
                 MoveToPoint(md.endPoint, cEnd);
-                cMove.Visibility = cEnd.Visibility = Visibility.Visible;
+                cStart.Visibility = cEnd.Visibility = Visibility.Visible;
                 if (isEditing)
                 {
                     frameContent.ColumnDefinitions[0].Width = new GridLength(100d);
@@ -366,7 +401,7 @@ namespace FindingStar
         {
             if (md != null)
             {
-                btnEdit.IsEnabled = btnWidthSearch.IsEnabled = btnDepthSearch.IsEnabled = false;
+                btnSearchBoth.IsEnabled = btnEdit.IsEnabled = btnWidthSearch.IsEnabled = btnDepthSearch.IsEnabled = false;
                 btnDelete.IsEnabled = true;
                 panelViewMaze.Visibility = Visibility.Hidden;
                 panelEditMaze.Visibility = Visibility.Visible;
@@ -378,7 +413,7 @@ namespace FindingStar
         {
             if (md != null)
             {
-                btnEdit.IsEnabled = btnWidthSearch.IsEnabled = btnDepthSearch.IsEnabled = true;
+                btnSearchBoth.IsEnabled= btnEdit.IsEnabled = btnWidthSearch.IsEnabled = btnDepthSearch.IsEnabled = true;
                 btnDelete.IsEnabled = true;
                 panelViewMaze.Visibility = Visibility.Visible;
                 panelEditMaze.Visibility = Visibility.Hidden;
@@ -417,7 +452,7 @@ namespace FindingStar
                     {
                         //设置为起点
                         md.startPoint = p;
-                        MoveToPoint(p, cMove);
+                        MoveToPoint(p, cStart);
                     }
                     else if (rbEnd.IsChecked == true)
                     {
@@ -430,11 +465,6 @@ namespace FindingStar
             }
         }
 
-        private void btnClearPath_Click(object sender, RoutedEventArgs e)
-        {
 
-            rereadMaze();
-
-        }
     }
 }

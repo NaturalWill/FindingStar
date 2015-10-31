@@ -40,7 +40,9 @@
             <Button x:Name="btnDelete" Content="删除" Padding="5,0,5,0"  Margin="5,0,5,0" Background="White" Click="btnDelete_Click" IsEnabled="False" />
             <Button x:Name="btnDepthSearch" Content="深度搜索" Padding="5,0,5,0"  Margin="40,0,5,0"  Background="White" IsEnabled="False" Click="btnDepthSearch_Click"/>
             <Button x:Name="btnWidthSearch" Content="广度搜索" Padding="5,0,5,0"  Margin="5,0,5,0"  Background="White" IsEnabled="False" Click="btnWidthSearch_Click"/>
-            <Button x:Name="btnClearPath" Content="清空路线" Padding="5,0,5,0"  Margin="5,0,5,0"  Background="White" IsEnabled="False" Click="btnClearPath_Click" />
+            <Button x:Name="btnSearchBoth" Content="比较搜索" Padding="5,0,5,0"  Margin="5,0,5,0"  Background="White" IsEnabled="False" Click="btnSearchBoth_Click" />
+            <Button x:Name="btnClearPath" Content="停止" Padding="5,0,5,0"  Margin="5,0,5,0"  Background="White" IsEnabled="False" Click="btnClearPath_Click" />
+            
         </StackPanel>
 
         <StackPanel x:Name="panelEditMaze" Grid.Row="0" Grid.Column="1" Orientation="Horizontal"  Margin="4" Visibility="Hidden">

@@ -6,15 +6,7 @@
         xmlns:local="clr-namespace:FindingStar"
         mc:Ignorable="d"
         Title="Window1" Height="600" Width="800">
-    <Grid x:Name="main">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="160" />
-            <RowDefinition />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="160" />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
+    <StackPanel x:Name="main">
         <!--直线-->
         <Path Stroke="Blue" StrokeThickness="2" Grid.RowSpan="4">
             <Path.Data>
@@ -60,7 +52,23 @@
         <Button x:Name="button" Content="Button" Click="button_Click" Grid.Column="1" HorizontalAlignment="Left" Margin="284,342,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75"/>
         <WindowsFormsHost x:Name="wfh" Grid.Column="1" HorizontalAlignment="Left" Height="181" Margin="236,119,0,0" Grid.Row="1" VerticalAlignment="Top" Width="225"/>
         <TextBlock x:Name="textBlock" Grid.Column="1" HorizontalAlignment="Left" Margin="46,300,0,0" Grid.Row="1" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>-->
-
+        <Ellipse x:Name="ellipseWithLinearGradientBrushButtonOuter" Stroke="#FF000000" HorizontalAlignment="Left" Height="113.599" Width="113.559">
+            <Ellipse.Fill>
+                <LinearGradientBrush EndPoint="0.851,0.838" StartPoint="0.115,0.169">
+                    <GradientStop Color="#FFA21212" Offset="0"/>
+                    <GradientStop Color="#FFF8C906" Offset="1"/>
+                </LinearGradientBrush>
+            </Ellipse.Fill>
+        </Ellipse>
+        <Ellipse x:Name="ellipseWithLinearGradientBrushButtonInner" Stroke="#FF000000" Width="89.006" Height="89.006" HorizontalAlignment="Left">
+            <Ellipse.Fill>
+                <LinearGradientBrush EndPoint="0.129,0.129" StartPoint="0.879,0.845">
+                    <GradientStop Color="#FFA21212" Offset="0"/>
+                    <GradientStop Color="#FFF8C906" Offset="1"/>
+                </LinearGradientBrush>
+            </Ellipse.Fill>
+        </Ellipse>
         <Path Grid.RowSpan="2" Stroke="Black" Data="M 55,95 L 115,75 115,85 115,95 105,95 95,95 95,105 85,105 85,115 75,115 65,115 65,105 65,95 55,95 " />
-    </Grid>
+       
+    </StackPanel>
 </Window>

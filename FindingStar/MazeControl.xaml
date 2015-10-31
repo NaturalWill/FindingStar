@@ -8,9 +8,18 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <StackPanel x:Name="sPanel" Margin="0,10,0,-10">
-            <Path x:Name="pathStar" Fill="Yellow" Stroke="Red" Data="M 55,1 L 68,40 L 109,40 L 75,64 L 88,104 L 55,79 L 22,104 L 34,64 L 1,40 L 42,40 L 55,1 Z" HorizontalAlignment="Left" Height="30" Stretch="Fill" Width="30" Margin="-10" />
-            <Ellipse x:Name="ellipseMove" Height="12" Width="12" Fill="Yellow" Stroke="Red" Margin="-1"/>
+            <Path x:Name="sStar" Fill="#FFFFC500"  Data="M 55,1 L 68,40 L 109,40 L 75,64 L 88,104 L 55,79 L 22,104 L 34,64 L 1,40 L 42,40 L 55,1 Z" HorizontalAlignment="Left" Height="20" Stretch="Fill" Width="20" Margin="-5" />
+            <Ellipse x:Name="sStart" Height="12" Width="12"  Margin="-1">
+                <Ellipse.Fill>
+                    <RadialGradientBrush>
+                        <GradientStop Color="#FFB6F8F1" Offset="0"></GradientStop>
+                        <GradientStop Color="#FF0082BD" Offset="0.25"></GradientStop>
+                        <GradientStop Color="#FF95DEFF" Offset="0.75"></GradientStop>
+                        <GradientStop Color="#FF004F72" Offset="1.5"></GradientStop>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
         </StackPanel>
-            
+
     </Grid>
 </UserControl>
