@@ -18,6 +18,7 @@ namespace FindingStar
         int speed;
         public static int th_num = 1;
         string strDepthPath;
+        string strWidthPath;
         public MazePath(MazeData _md, ref Grid g)
         {
             md = _md;
@@ -228,13 +229,19 @@ namespace FindingStar
                 }
             }
             System.Drawing.Point p = end_point;
+            strWidthPath = "M " + (p.X * MCommon.MazeGridLenght + MCommon.MazeGridLenght / 2) + ","
+               + (p.Y * MCommon.MazeGridLenght + MCommon.MazeGridLenght / 2) + " L";
             while (p.X != -1)//还原路径
             {
                 //g.FillEllipse(Brushes.Green, p.X, p.Y, 10, 10);//画出路径
-                MainWindow.mw.FillGridInvoke(p, Brushes.Yellow);
+                //MainWindow.mw.FillGridInvoke(p, Brushes.Yellow);
 
+                strWidthPath += " " + (p.X * MCommon.MazeGridLenght + MCommon.MazeGridLenght / 2)
+                    + "," + (p.Y * MCommon.MazeGridLenght + MCommon.MazeGridLenght / 2);
+                
                 p = stp_passed[p];
             }
+            MainWindow.mw.DrawWidthPathInvoke(strWidthPath);
             //g.FillEllipse(Brushes.Green, 0, 0, 10, 10);
             MessageBox.Show("搜索完成，成功找到了星星");
             ++th_num;

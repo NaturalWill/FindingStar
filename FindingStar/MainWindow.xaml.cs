@@ -129,10 +129,19 @@ namespace FindingStar
         }
 
         delegate void DelegateDrawPath(string s);
-        Path mazePath; GeometryConverter gc;
+        Path mazePath;
+        Path mazeWidthPath;
+        GeometryConverter gc;
+        GeometryConverter gc2;
         public void DrawPathInvoke(string s)
         {
             DelegateDrawPath d = drawPath;
+            this.Dispatcher.BeginInvoke(d, new object[] { s });
+
+        }
+        public void DrawWidthPathInvoke(string s)
+        {
+            DelegateDrawPath d = drawWidthPath;
             this.Dispatcher.BeginInvoke(d, new object[] { s });
 
         }
@@ -150,6 +159,22 @@ namespace FindingStar
             if (!gMaze.Children.Contains(mazePath))
                 gMaze.Children.Add(mazePath);
             mazePath.Data = (Geometry)gc.ConvertFromString(strPath);
+
+        }
+        void drawWidthPath(string strPath)
+        {
+            if (mazeWidthPath == null || gc2 == null)
+            {
+                mazeWidthPath = new Path();
+                gc2 = new GeometryConverter();
+                mazeWidthPath.Stroke = Brushes.Blue;
+                mazeWidthPath.StrokeThickness = 3;
+                Grid.SetRowSpan(mazeWidthPath, md.Height);
+                Grid.SetColumnSpan(mazeWidthPath, md.Width);
+            }
+            if (!gMaze.Children.Contains(mazeWidthPath))
+                gMaze.Children.Add(mazeWidthPath);
+            mazeWidthPath.Data = (Geometry)gc2.ConvertFromString(strPath);
 
         }
         #region panelEdit
@@ -292,9 +317,9 @@ namespace FindingStar
                     listRect.Add(r);
                     //r.StrokeThickness = 0;
                     if (md.MazeString[p.Y * md.Width + p.X] == '1')
-                        r.Fill = MCommon.getCellColor(CellColor.access);
+                        r.Fill = MCommon.getCellColor(CellState.access);
                     else
-                        r.Fill = MCommon.getCellColor(CellColor.obstacle);
+                        r.Fill = MCommon.getCellColor(CellState.obstacle);
 
                     gMaze.Children.Add(r);
 
@@ -413,7 +438,7 @@ namespace FindingStar
         {
             if (md != null)
             {
-                btnSearchBoth.IsEnabled= btnEdit.IsEnabled = btnWidthSearch.IsEnabled = btnDepthSearch.IsEnabled = true;
+                btnSearchBoth.IsEnabled = btnEdit.IsEnabled = btnWidthSearch.IsEnabled = btnDepthSearch.IsEnabled = true;
                 btnDelete.IsEnabled = true;
                 panelViewMaze.Visibility = Visibility.Visible;
                 panelEditMaze.Visibility = Visibility.Hidden;
@@ -425,6 +450,8 @@ namespace FindingStar
             btnWidthSearch.IsEnabled = btnDepthSearch.IsEnabled = btnEdit.IsEnabled = btnDelete.IsEnabled = isEditing = false;
         }
 
+        CellState cs = CellState.access;
+
         private void gMaze_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (isEditing)
@@ -433,28 +460,31 @@ namespace FindingStar
                 System.Drawing.Point p = new System.Drawing.Point((int)(pt.X / MCommon.MazeGridLenght), (int)(pt.Y / MCommon.MazeGridLenght));
 
 
-                if (rbObstacle.IsChecked == true)
+                if (cs == CellState.obstacle)
                 {
-                    //变为障碍
-                    md.MazeString[md.p2i(p)] = '0';
-                    FillGridInvoke(p, MCommon.getCellColor(CellColor.obstacle));
+                    if (md.startPoint != p && md.endPoint != p)
+                    {
+                        //点击处不为起点和终点，变为障碍
+                        md.MazeString[md.p2i(p)] = '0';
+                        FillGridInvoke(p, MCommon.getCellColor(CellState.obstacle));
+                    }
                 }
-                else if (rbAccess.IsChecked == true)
+                else if (cs == CellState.access)
                 {
                     //变为通路
                     md.MazeString[md.p2i(p)] = '1';
-                    FillGridInvoke(p, MCommon.getCellColor(CellColor.access));
+                    FillGridInvoke(p, MCommon.getCellColor(CellState.access));
                 }
                 else if (md.MazeString[md.p2i(p)] == '1')
                 {
                     //点击处为通路
-                    if (rbStart.IsChecked == true)
+                    if (cs == CellState.start)
                     {
                         //设置为起点
                         md.startPoint = p;
                         MoveToPoint(p, cStart);
                     }
-                    else if (rbEnd.IsChecked == true)
+                    else if (cs == CellState.end)
                     {
                         //设置为终点
                         md.endPoint = p;
@@ -465,6 +495,26 @@ namespace FindingStar
             }
         }
 
+        private void spSet_MouseDown(object sender, MouseButtonEventArgs e)
+        {
 
+            if (isEditing)
+            {
+                Point pt = e.GetPosition(spSet);
+                cs = (CellState)((int)pt.Y / 50);
+                for (int i = 0; i < spSet.Children.Count; i++)
+                {
+                    if ((int)cs == i)
+                    {
+                        ((Border)spSet.Children[i]).BorderBrush = Brushes.Red;
+
+                    }
+                    else
+                    {
+                        ((Border)spSet.Children[i]).BorderBrush = Brushes.White;
+                    }
+                }
+            }
+        }
     }
 }

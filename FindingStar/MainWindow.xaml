@@ -42,7 +42,7 @@
             <Button x:Name="btnWidthSearch" Content="广度搜索" Padding="5,0,5,0"  Margin="5,0,5,0"  Background="White" IsEnabled="False" Click="btnWidthSearch_Click"/>
             <Button x:Name="btnSearchBoth" Content="比较搜索" Padding="5,0,5,0"  Margin="5,0,5,0"  Background="White" IsEnabled="False" Click="btnSearchBoth_Click" />
             <Button x:Name="btnClearPath" Content="停止" Padding="5,0,5,0"  Margin="5,0,5,0"  Background="White" IsEnabled="False" Click="btnClearPath_Click" />
-            
+
         </StackPanel>
 
         <StackPanel x:Name="panelEditMaze" Grid.Row="0" Grid.Column="1" Orientation="Horizontal"  Margin="4" Visibility="Hidden">
@@ -68,12 +68,41 @@
                 <ColumnDefinition Width="100"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0" Margin="5,30">
+            <StackPanel x:Name="spSet" Grid.Column="0" Margin="5" Height="200" MouseDown="spSet_MouseDown">
 
-                <RadioButton x:Name="rbAccess" Content="■通道" GroupName="SetMaze"  HorizontalAlignment="Center" Margin="0,10" FontSize="16" Foreground="LightGray" IsChecked="True" />
-                <RadioButton x:Name="rbObstacle" Content="■障碍" GroupName="SetMaze"  HorizontalAlignment="Center" Margin="0,10" FontSize="16" Foreground="Black" />
-                <RadioButton x:Name="rbStart" Content="■起点" GroupName="SetMaze"  HorizontalAlignment="Center" Margin="0,10"  FontSize="16" Foreground="Yellow"/>
-                <RadioButton x:Name="rbEnd" Content="■终点" GroupName="SetMaze"  HorizontalAlignment="Center" Margin="0,10" FontSize="16" Foreground="LightGreen"/>
+                <Border BorderBrush="Red" BorderThickness="1" >
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5" Height="38">
+                        <Rectangle Fill="LightGray"  HorizontalAlignment="Left" Height="30" Stretch="Fill" Width="30"  />
+                        <TextBlock Text="通路" Margin="2,5" FontSize="20"></TextBlock>
+                    </StackPanel>
+                </Border>
+                <Border BorderBrush="White" BorderThickness="1" >
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5" Height="38">
+                        <Rectangle Fill="Black"  HorizontalAlignment="Left" Height="30" Stretch="Fill" Width="30"  />
+                        <TextBlock Text="障碍" Margin="2,5" FontSize="20"></TextBlock>
+                    </StackPanel>
+                </Border>
+                <Border BorderBrush="White" BorderThickness="1" >
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5"  Height="38">
+                        <Ellipse Height="30" Width="30"  >
+                            <Ellipse.Fill>
+                                <RadialGradientBrush>
+                                    <GradientStop Color="#FFB6F8F1" Offset="0"></GradientStop>
+                                    <GradientStop Color="#FF0082BD" Offset="0.25"></GradientStop>
+                                    <GradientStop Color="#FF95DEFF" Offset="0.75"></GradientStop>
+                                    <GradientStop Color="#FF004F72" Offset="1.5"></GradientStop>
+                                </RadialGradientBrush>
+                            </Ellipse.Fill>
+                        </Ellipse>
+                        <TextBlock Text="起点" Margin="2,5" FontSize="20"></TextBlock>
+                    </StackPanel>
+                </Border>
+                <Border BorderBrush="White" BorderThickness="1" >
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5" Height="38">
+                        <Path  Fill="#FFFFC500"  Data="M 55,1 L 68,40 L 109,40 L 75,64 L 88,104 L 55,79 L 22,104 L 34,64 L 1,40 L 42,40 L 55,1 Z" HorizontalAlignment="Left" Height="30" Stretch="Fill" Width="30"  />
+                        <TextBlock Text="终点" Margin="2,5" FontSize="20"></TextBlock>
+                    </StackPanel>
+                </Border>
 
             </StackPanel>
 

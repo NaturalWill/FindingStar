@@ -17,18 +17,18 @@ namespace FindingStar
         public const int MazeGridLenght = 10;
 
 
-        public static Brush getCellColor(CellColor cc)
+        public static Brush getCellColor(CellState cc)
         {
-            if (cc == CellColor.obstacle) return Brushes.Black;
-            else if (cc == CellColor.access) return Brushes.LightGray;
-            else if (cc == CellColor.start) return Brushes.Yellow;
+            if (cc == CellState.obstacle) return Brushes.Black;
+            else if (cc == CellState.access) return Brushes.LightGray;
+            else if (cc == CellState.start) return Brushes.Yellow;
             else return Brushes.LightGreen;
         }
 
 
     }
-    public enum CellColor
-    { obstacle, access, start, end }
+    public enum CellState
+    { access, obstacle, start, end }
 
     //public class Point
     //{
